@@ -1,10 +1,9 @@
 from random import choice, randint, randrange
 
-
 def genlist():
     list_ = []
     result = "["
-    for i in range(randint(1, 10)):
+    for i in range(randint(1, 7)):
         list_.append(choice(bools))
     for i in list_:
         result += str(i) + ", "
@@ -14,8 +13,9 @@ def genlist():
 def gennum():
     list_ = []
     result = "("
-    for i in range(randint(1, 10)):
-        list_.append(str(randint(1, 500)))
+    for i in range(randint(1, 7)):
+        list_.append(choice([str(randint(1, 500)),
+        str(randint(1, 500)) + choice([" * ", " + ", " / ", " // ", " % ", " - ", " ** "]) + str(randint(1, 500))]))
         list_.append(choice(numcomparitives))
     list_.append(str(randint(1, 500)))
     for i in list_:
@@ -100,8 +100,8 @@ num = Num()
 exp = FurtherExpression()
 comparatives = ["and", "or", "is", "is not", "==", "!=", "in"]
 numcomparitives = ["==", "!=", ">=", "<=", ">", ">"]
-bools = ["True", "False", "(not True)", "(not False)", "1", "0", "(not 1)", "(not 0)", num, exp]
-boolnonum = ["True", "False", "(not True)", "(not False)", "(not 1)", "(not 0)", num, exp]
-
+bools = ["True", "False", "(not True)", "(not False)", "1", "0", "(not 1)", "(not 0)", num, exp, exp]
+boolnonum = ["True", "False", "(not True)", "(not False)", "(not 1)", "(not 0)", num, exp, exp]
+result = False
 with open("expression.py", "w") as w:
-    w.write("boolean = " + genexp(10003))
+  w.write("boolean = " +  "(" + genexp(1001) + ") " + choice(["or", "and"]) + choice([" True"," False"]))
