@@ -5,15 +5,16 @@ name1 = ["", "number_", "string_", "expression_", "boolean_", "object_"]
 name2 = ["generator", "calculator", "compare", "parser", "deleter", "handler"]
 name3 = ["", "_new", "_deprecated", "_two", "_func", "_old", "_better", "_function"]
 variables = ["x", "y", "num", "string", "data", "result", "numlist", "text"]
-objs = ["obj", "newclass", "thing", "objectobjector"]
 comparatives = ["and", "or", "is", "is not", "==", "!=", "in"]
 numcomparitives = ["==", "!=", ">=", "<=", ">", ">"]
+iters = ["i", "j", "k", "m", "n", "r"]
 
 
 
 indentnum = 0
-max = 1000
-maxselec = 4
+max = 100
+maxselec = 5
+maxindent = 15
 
 out = []
 
@@ -118,7 +119,6 @@ def gendef():
         name = ("\t" * indentnum) + "def " + (ref := choice(name1) + choice(name2) + choice(name3)) + "(" + parameters[:-2] + "):" + "\n"
         tempcount += 1
         if tempcount > len(defined):
-            name = ("\t" * indentnum) + "def " + (ref := choice(name1) + choice(name2) + choice(name3)) + "(" + parameters[:-2] + "):" + "\n"
             for i in range(len(defined) - 1):
                 if defined[i][0] == ref:
                     numparam = defined[i][1]
@@ -137,48 +137,49 @@ def gendef():
     out.append(name)
 
     indentnum += 1
-    genline(2, True, validvar, globallist)
+    genline(2, True, validvar)
     indentnum -= 1
 
     defined.append([ref, paramnum])
 
-def genclass():
+def geniter(validvar = variables):
+    global maxselec
     global indentnum
-    name = ("\n" * indentnum) + "class " + choice(objs) + ":\n"
-    out.append(name)
-
+    iterer = choice(iters)
+    forname = (("\t" * indentnum) + f"for {iterer} in range(int(" + str(choice([choice(validvar), randint(1,20)])) + ")):\n")
+    out.append(forname)
     indentnum += 1
-    genline()
+    genline(maxselec, True, validvar + [iterer])
     indentnum -= 1
 
-def genselec(globallist, validvar = variables):
+def genselec(validvar = variables):
     global maxselec
     global indentnum
     ifname = ("\t" * indentnum) + "if " + genexp(3) + ":" + "\n"
     out.append(ifname)
     indentnum += 1
-    genline(maxselec, True, validvar, globallist)
+    genline(maxselec, True, validvar)
     indentnum -= 1
-    if choice([1,0]):
-        elsename = ("\t" * indentnum) + "elif " + genexp(randrange(1, 5, 2)) + ":" + "\n"
-    else:
-        elsename = ("\t" * indentnum) + "else" + ":" + "\n"
+    for i in range(randint(0,1)):
+        elsename = ("\t" * indentnum) + "elif " + genexp(3)+ ":" + "\n"
+        out.append(elsename)
+        indentnum += 1
+        genline(maxselec, True, validvar)
+        indentnum -= 1
+    elsename = ("\t" * indentnum) + "else" + ":" + "\n"
     out.append(elsename)
     indentnum += 1
-    genline(maxselec, True, validvar, globallist)
+    genline(maxselec, True, validvar)
     indentnum -= 1
 
-def genline(max, selec, validvar, globallist):
+def genline(max, selec, validvar):
+    global maxindent
     for i in range(randint(1,max)):
-        ltype = randint(1,6)
+        ltype = randint(1,7)
         match ltype:
             case 1:
                 var = choice(validvar)
-                if False and var not in globallist:
-                    line = ("\t" * indentnum) + "global " + var + "\n" + ("\t" * indentnum) + var + choice([" *= ", " += ", " /= ", " //= ", " %= ", " -= ", "**="]) + str(randint(1, 20)) + "\n"
-                else:
-                    line = ("\t" * indentnum) + var + choice([" *= ", " += ", " /= ", " //= ", " %= ", " -= ", "**="]) + str(randint(1, 20)) + "\n"
-                    globallist += [var]
+                line = ("\t" * indentnum) + var + choice([" *= ", " += ", " /= ", " //= ", " %= ", " -= "]) + str(randint(1, 20)) + "\n"
             case 2:
                 if len(defined) > 0:
                     func = choice(defined)
@@ -189,28 +190,30 @@ def genline(max, selec, validvar, globallist):
                 else:
                     line = ("\t" * indentnum) + "pass" + "\n"
             case 3:
-                genselec(globallist, validvar)
-                line = ""
+                if indentnum < maxindent:
+                    genselec(validvar)
+                    line = ""
+                else:
+                    line = ("\t" * indentnum) + "pass\n"
             case 4:
                 if not selec:
                     gendef()
                     line = ""
                 else:
                     var = choice(validvar)
-                    if False and var not in globallist:
-                        line = ("\t" * indentnum) + "global " + var +  "\n" + ("\t" * indentnum) + var + choice([" *= ", " += ", " /= ", " //= ", " %= ", " -= ", "**="]) + str(randint(1, 20)) + "\n"
-                    else:
-                        line = ("\t" * indentnum) + var + choice([" *= ", " += ", " /= ", " //= ", " %= ", " -= ", "**="]) + str(randint(1, 20)) + "\n"
-                        globallist += [var]
+                    line = ("\t" * indentnum) + var + choice([" *= ", " += ", " /= ", " //= ", " %= ", " -= "]) + str(randint(1, 20)) + "\n"
 
             case 5:
                 line = ("\t" * indentnum) + "print(" + choice(validvar) + ")\n"
             case 6:
                 line = ("\t" * indentnum) + choice(validvar) + "=" + str(randint(1, 50)) + "\n"
+            case 7:
+                geniter(validvar)
+                line = ""
         out.append(line)
 
 
-genline(max, False, variables, [])
+genline(max, False, variables)
 
 print(out)
 for i in out:
